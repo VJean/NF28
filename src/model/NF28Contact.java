@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javafx.beans.property.ListProperty;
@@ -16,8 +17,7 @@ public class NF28Contact {
 	private StringProperty prenom = new SimpleStringProperty();
 	private StringProperty sexe = new SimpleStringProperty();
 	private NF28Adresse adresse = new NF28Adresse();
-	private Date dateNaissance = new Date();
-	private StringProperty country = new SimpleStringProperty();
+	private LocalDate dateNaissance = LocalDate.MAX;
 
 	public StringProperty nomProperty() {
 		return nom;
@@ -56,33 +56,23 @@ public class NF28Contact {
 		this.adresse = adresse;
 	}
 
-	public Date getDateNaissance() {
+	public LocalDate getDateNaissance() {
 		return dateNaissance;
 	}
-	public void setDateNaissance(Date dateNaissance) {
+	public void setDateNaissance(LocalDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
-	}
-
-	public StringProperty countryProperty(){
-		return country;
-	}
-	public void setCountry(String value){
-		this.country.setValue(value);
-	}
-	public String getCountry(){
-		return country.get();
 	}
 
 
 	public NF28Contact(){
 	}
+
 	public NF28Contact(NF28Contact c){
 		this.nom.setValue(c.getNom());
 		this.prenom.setValue(c.getPrenom());
 		this.sexe.setValue(c.getSexe());
 		this.adresse = new NF28Adresse(c.getAdresse());
-		this.dateNaissance = (Date) c.getDateNaissance().clone();
-		this.country.setValue(c.getCountry());
+		this.dateNaissance = LocalDate.of(c.getDateNaissance().getYear(),c.getDateNaissance().getMonth(),c.getDateNaissance().getDayOfMonth());
 	}
 
 }
