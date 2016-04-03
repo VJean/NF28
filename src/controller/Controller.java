@@ -59,8 +59,8 @@ public class Controller {
 		TreeItem<Object> root = new TreeItem<Object>("Fiche de contacts");
 		groupsView.setRoot(root);
 		editingPanel.visibleProperty().set(false);
-		
-		
+
+
 		fieldNom.textProperty().addListener(
 				(obs,oldval,newval) -> { this.currentContact.setNom(newval); }
 		);
@@ -82,7 +82,7 @@ public class Controller {
 			}
 			else if (change.wasAdded()) { // add corresponding Contact TreeItems
 				change.getAddedSubList().forEach(item -> {
-					// consid�rer le groupe selectionn� actuellement, ou bien le p�re du contact selectionn� actuellement
+					// considérer le groupe selectionné actuellement, ou bien le père du contact selectionné actuellement
 				});
 			}
 		};
@@ -109,11 +109,11 @@ public class Controller {
 		if (groupsView.getSelectionModel().selectedItemProperty().getValue() == null)
 			return;
 		
-		
+		// l'item selecionné est la racine
 		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue().getClass() == String.class){
 			NF28Groupe newGroupe = new NF28Groupe();
 			model.getGroups().add(newGroupe);
-		} else {
+		} else { // l'item selectionné est un contact ou un groupe
 			currentContact = new NF28Contact();
 			editingPanel.visibleProperty().set(true);
 			this.reset();
@@ -138,12 +138,20 @@ public class Controller {
 	public void saveContact(){
 		if (groupsView.getSelectionModel().selectedItemProperty().getValue() == null)
 			return;
-		
-		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue().getClass() == NF28Groupe.class){
-			NF28Groupe currentGroupe = (NF28Groupe) groupsView.getSelectionModel().selectedItemProperty().getValue().getValue();
-			currentGroupe.getContacts().add(new NF28Contact(currentContact));
-		}
 
-		//this.contactModel.saveContact();
+		// on ajoute le contact au groupe selectionné, s'il y en a un.
+		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue().getClass() == NF28Groupe.class){
+			// référencer le groupe sélectionné
+			NF28Groupe currentGroupe = (NF28Groupe) groupsView.getSelectionModel().selectedItemProperty().getValue().getValue();
+
+			// valider le contact
+			if (model.validateContact(currentContact)) {
+				currentGroupe.getContacts().add(new NF28Contact(currentContact));
+			}
+		} else {
+			// avertir l'utilisateur qu'il faut sélectionner un groupe :
+			Alert alert = new Alert(Alert.AlertType.ERROR, "Veuillez sélectionner le groupe dans lequel vous souhaitez enregistrer ce contact.");
+			alert.showAndWait();
+		}
 	}
 }
