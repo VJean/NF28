@@ -1,6 +1,10 @@
 package model;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,8 +35,59 @@ public class Model {
 	 * @return true si le contact est valide, false sinon (regarder le contenu de validationErrors dans ce cas)
 	 */
 	public boolean validateContact(NF28Contact c){
-
 		boolean valid = true;
+		validationErrors.clear();
+
+		// nom ne doit pas être vide
+		if (c.getNom() == null || c.getNom().isEmpty()) {
+			valid = false;
+			validationErrors.put("nom", "Le nom ne peut pas être vide");
+		}
+
+		// nom ne doit pas être vide
+		if (c.getPrenom() == null || c.getPrenom().isEmpty()) {
+			valid = false;
+			validationErrors.put("prenom", "Le prénom ne peut pas être vide");
+		}
+
+		// voie ne doit pas être vide
+		if (c.getAdresse().getVoie() == null || c.getAdresse().getVoie().isEmpty()) {
+			valid = false;
+			validationErrors.put("voie", "La voie ne peut pas être vide");
+		}
+
+		// codePostal ne doit pas être vide et est composé de chiffres
+		if (c.getAdresse().getCodePostal() == null || c.getAdresse().getCodePostal().isEmpty()) {
+			valid = false;
+			validationErrors.put("cp", "Le Code Postal ne peut pas être vide");
+		} else if (!Pattern.matches("\\d+",c.getAdresse().getCodePostal())) {
+			valid = false;
+			validationErrors.put("cp", "Un code postal est composé de chiffres");
+		}
+
+		// ville ne doit pas être vide
+		if (c.getAdresse().getVille() == null || c.getAdresse().getVille().isEmpty()) {
+			valid = false;
+			validationErrors.put("ville", "La ville ne peut pas être vide");
+		}
+
+		// pays ne doit pas être vide
+		if (c.getAdresse().getPays() == null || c.getAdresse().getPays().isEmpty()) {
+			valid = false;
+			validationErrors.put("pays", "Il faut choisir un pays");
+		}
+
+		// sexe ne doit pas être vide
+		if (c.getSexe() == null || c.getSexe().isEmpty()) {
+			valid = false;
+			validationErrors.put("sexe", "Il faut renseigner un genre");
+		}
+
+		// date ne doit pas être vide et doit être dans le passé
+		if (c.getDateNaissance() == null || c.getDateNaissance().isAfter(LocalDate.now())) {
+			valid = false;
+			validationErrors.put("date", "Indiquer une date de naissance (avant aujourd'hui)");
+		}
 
 		return valid;
 	}

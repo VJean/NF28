@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import model.Model;
 import model.NF28Contact;
@@ -62,18 +63,29 @@ public class Controller {
 
 
 		fieldNom.textProperty().addListener(
-				(obs,oldval,newval) -> { this.currentContact.setNom(newval); }
+				(obs,oldval,newval) -> this.currentContact.setNom(newval)
 		);
 		fieldPrenom.textProperty().addListener(
-				(obs,oldval,newval) -> { this.currentContact.setPrenom(newval); }
+				(obs,oldval,newval) -> this.currentContact.setPrenom(newval)
 		);
-		radioGroupSexe.selectedToggleProperty().addListener(
-				(obs,oldval,newval) -> { this.currentContact.setSexe(newval.toString()); }
+		fieldVoie.textProperty().addListener(
+				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setVoie(newValue)
+		);
+		fieldVille.textProperty().addListener(
+				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setVille(newValue)
+		);
+		fieldCP.textProperty().addListener(
+				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setCodePostal(newValue)
 		);
 		choicePays.getSelectionModel().selectedItemProperty().addListener(
-				(obs,oldval,newval) -> { this.currentContact.setCountry(newval); }
+				(obs,oldval,newval) -> this.currentContact.getAdresse().setPays(newval)
 		);
-		
+		radioGroupSexe.selectedToggleProperty().addListener(
+				(obs,oldval,newval) -> this.currentContact.setSexe(newval.toString())
+		);
+		fieldDate.valueProperty().addListener(
+				(observable, oldValue, newValue) -> this.currentContact.setDateNaissance(newValue)
+		);
 				
 		ListChangeListener<NF28Contact> contactChange = change -> {
 			change.next();
@@ -103,6 +115,22 @@ public class Controller {
 		
 		model.getGroups().addListener(groupChange);
 
+		// bind to model validation map
+		listenToValidationErrors();
+
+	}
+
+	private void listenToValidationErrors() {
+		MapChangeListener<String,String> listener;
+
+		listener = changed -> {
+			if(changed.wasAdded()) {
+				System.out.println("oops, i have received an error message: "
+						+ changed.getKey() + " " +
+						changed.getValueAdded());
+			}
+		};
+		model.getValidationErrors().addListener(listener);
 	}
 
 	public void addTreeItem() {
