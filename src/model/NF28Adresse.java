@@ -20,8 +20,8 @@ public class NF28Adresse {
 	public String getVoie() {
 		return voie.get();
 	}
-	public void setVoie(StringProperty voie) {
-		this.voie = voie;
+	public void setVoie(String voie) {
+		this.voie.setValue(voie);
 	}
 
 	// CP
@@ -31,8 +31,8 @@ public class NF28Adresse {
 	public String getCodePostal() {
 		return codePostal.get();
 	}
-	public void setCodePostal(StringProperty codePostal) {
-		this.codePostal = codePostal;
+	public void setCodePostal(String codePostal) {
+		this.codePostal.set(codePostal);
 	}
 
 	// ville
@@ -42,8 +42,8 @@ public class NF28Adresse {
 	public String getVille() {
 		return ville.get();
 	}
-	public void setVille(StringProperty ville) {
-		this.ville = ville;
+	public void setVille(String ville) {
+		this.ville.setValue(ville);
 	}
 
 	// pays
@@ -53,8 +53,8 @@ public class NF28Adresse {
 	public String getPays() {
 		return pays.get();
 	}
-	public void setPays(StringProperty pays) {
-		this.pays = pays;
+	public void setPays(String pays) {
+		this.pays.setValue(pays);
 	}
 
 	//default ctor
