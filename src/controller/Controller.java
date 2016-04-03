@@ -40,8 +40,7 @@ public class Controller {
 	TreeView<Object> groupsView;
 	@FXML
 	VBox editingPanel;
-	
-	
+
     Model model;
     NF28Contact currentContact;
 
@@ -125,9 +124,80 @@ public class Controller {
 
 		listener = changed -> {
 			if(changed.wasAdded()) {
-				System.out.println("oops, i have received an error message: "
-						+ changed.getKey() + " " +
-						changed.getValueAdded());
+				switch (changed.getKey().toString()) {
+					case "nom":
+						fieldNom.setStyle("-fx-border-color: red");
+						fieldNom.setTooltip(new Tooltip(changed.getValueAdded()));
+						break;
+					case "prenom":
+						fieldPrenom.setStyle("-fx-border-color: red");
+						fieldPrenom.setTooltip(new Tooltip(changed.getValueAdded()));
+						break;
+					case "voie":
+						fieldVoie.setStyle("-fx-border-color: red");
+						fieldVoie.setTooltip(new Tooltip(changed.getValueAdded()));
+						break;
+					case "cp":
+						fieldCP.setStyle("-fx-border-color: red");
+						fieldCP.setTooltip(new Tooltip(changed.getValueAdded()));
+						break;
+					case "ville":
+						fieldVille.setStyle("-fx-border-color: red");
+						fieldVille.setTooltip(new Tooltip(changed.getValueAdded()));
+						break;
+					case "pays":
+						choicePays.setStyle("-fx-border-color: red");
+						choicePays.setTooltip(new Tooltip(changed.getValueAdded()));
+						break;
+					case "sexe":
+						radioF.setStyle("-fx-border-color: red");
+						radioF.setTooltip(new Tooltip(changed.getValueAdded()));
+						radioM.setStyle("-fx-border-color: red");
+						radioM.setTooltip(new Tooltip(changed.getValueAdded()));
+						break;
+					case "date":
+						fieldDate.setStyle("-fx-border-color: red");
+						fieldDate.setTooltip(new Tooltip(changed.getValueAdded()));
+						break;
+				}
+				System.out.println("!!  " + changed.getKey() + ":\t" + changed.getValueAdded());
+			} else if(changed.wasRemoved()) {
+				switch (changed.getKey().toString()) {
+					case "nom":
+						fieldNom.setStyle("-fx-border-color: none");
+						fieldNom.setTooltip(new Tooltip(""));
+						break;
+					case "prenom":
+						fieldPrenom.setStyle("-fx-border-color: none");
+						fieldPrenom.setTooltip(new Tooltip(""));
+						break;
+					case "voie":
+						fieldVoie.setStyle("-fx-border-color: none");
+						fieldVoie.setTooltip(new Tooltip(""));
+						break;
+					case "cp":
+						fieldCP.setStyle("-fx-border-color: none");
+						fieldCP.setTooltip(new Tooltip(""));
+						break;
+					case "ville":
+						fieldVille.setStyle("-fx-border-color: none");
+						fieldVille.setTooltip(new Tooltip(""));
+						break;
+					case "pays":
+						choicePays.setStyle("-fx-border-color: none");
+						choicePays.setTooltip(new Tooltip(""));
+						break;
+					case "sexe":
+						radioF.setStyle("-fx-border-color: none");
+						radioF.setTooltip(new Tooltip(""));
+						radioM.setStyle("-fx-border-color: none");
+						radioM.setTooltip(new Tooltip(""));
+						break;
+					case "date":
+						fieldDate.setStyle("-fx-border-color: none");
+						fieldDate.setTooltip(new Tooltip(""));
+						break;
+				}
 			}
 		};
 		model.getValidationErrors().addListener(listener);
