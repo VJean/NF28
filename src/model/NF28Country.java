@@ -30,6 +30,8 @@ public class NF28Country {
 							.getDisplayCountry()))
 							.collect(Collectors.toList());
 
+		java.util.Collections.sort(countryNames);
+
 		return countryNames;
 	}
 }

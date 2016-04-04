@@ -75,4 +75,8 @@ public class NF28Contact {
 		this.dateNaissance = LocalDate.of(c.getDateNaissance().getYear(),c.getDateNaissance().getMonth(),c.getDateNaissance().getDayOfMonth());
 	}
 
+	@Override
+	public String toString() {
+		return getNom() + ", " + getPrenom();
+	}
 }
