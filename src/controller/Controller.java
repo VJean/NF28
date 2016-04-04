@@ -12,6 +12,7 @@ import model.NF28Groupe;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import model.NF28Country;
 
@@ -105,7 +106,7 @@ public class Controller {
 			}
 			else if (change.wasAdded()) { // add corresponding Groups TreeItems
 				change.getAddedSubList().forEach(item -> {
-					TreeItem<Object> g = new TreeItem<Object>(item);
+					TreeItem<Object> g = new TreeItem<Object>(item, new ImageView("file:res/group.png"));
 					this.groupsView.getRoot().getChildren().add(g);
 					item.getContacts().addListener(contactChange);
 				});

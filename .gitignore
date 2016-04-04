@@ -1,4 +1,4 @@
 # exclude everything except source files and resources files
 /*
 !src/
-!res/*
+!res/
