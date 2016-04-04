@@ -63,13 +63,13 @@ public class Controller {
 		groupsView.setCellFactory(param -> new TextFieldTreeCellImpl());
 		groupsView.setEditable(true);
 		
-		editingPanel.visibleProperty().set(false);
+		editingPanel.setVisible(false);
 
 		groupsView.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					if (newValue.getValue().getClass() == NF28Groupe.class)
+					if (newValue.getValue() instanceof NF28Groupe)
 						currentGroupeItem = newValue;
-					else if (newValue.getValue().getClass() == NF28Contact.class)
+					else if (newValue.getValue() instanceof NF28Contact)
 						currentGroupeItem = newValue.getParent();
 				}
 		);
@@ -107,7 +107,7 @@ public class Controller {
 			else if (change.wasAdded()) { // add corresponding Contact TreeItems
 				change.getAddedSubList().forEach(item -> {
 					// considérer le groupe selectionné actuellement, ou bien le père du contact selectionné actuellement
-					TreeItem<Object> c = new TreeItem<Object>(item);
+					TreeItem<Object> c = new TreeItem<Object>(item, new ImageView("file:res/contact.png"));
 					this.currentGroupeItem.getChildren().add(c);
 				});
 			}
@@ -224,13 +224,13 @@ public class Controller {
 			return;
 		
 		// l'item sélectionné est la racine
-		if (treeItem.getValue().getClass() == String.class){
+		if (treeItem.getValue() instanceof String){
 			NF28Groupe newGroupe = new NF28Groupe();
 			model.getGroups().add(newGroupe);
 		} else { // l'item sélectionné est un contact ou un groupe
 
 			currentContact = new NF28Contact();
-			editingPanel.visibleProperty().set(true);
+			editingPanel.setVisible(true);
 			this.reset();
 		}
 	}
@@ -255,10 +255,13 @@ public class Controller {
 			return;
 
 		// on ajoute le contact au groupe selectionné, s'il y en a un.
-		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue().getClass() == NF28Groupe.class){
+		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue() instanceof NF28Groupe){
 			// valider le contact
 			if (model.validateContact(currentContact)) {
+				// ajouter le contact au groupe sélectionné
 				((NF28Groupe) currentGroupeItem.getValue()).getContacts().add(new NF28Contact(currentContact));
+				// cacher le panel d'édition
+				editingPanel.setVisible(false);
 			}
 		} else {
 			// avertir l'utilisateur qu'il faut sélectionner un groupe :
