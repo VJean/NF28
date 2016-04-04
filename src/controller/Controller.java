@@ -43,13 +43,13 @@ public class Controller {
 	@FXML
 	VBox editingPanel;
 
-    Model model;
-	TreeItem<Object> currentGroupeItem;
-    NF28Contact currentContact;
-	enum EditingState {
+    private Model model;
+	private TreeItem<Object> currentGroupeItem;
+    private NF28Contact currentContact;
+	private enum EditingState {
 		IDLE, EDITING, ADDING
 	}
-	EditingState state = EditingState.IDLE;
+	private EditingState state = EditingState.IDLE;
 
     public Controller(){
     	model = new Model();
@@ -63,7 +63,7 @@ public class Controller {
 		radioM.setToggleGroup(radioGroupSexe);
 		radioF.setToggleGroup(radioGroupSexe);
 
-		TreeItem<Object> root = new TreeItem<Object>("Fiche de contacts");
+		TreeItem<Object> root = new TreeItem<>("Fiche de contacts");
 		groupsView.setRoot(root);
 		groupsView.setCellFactory(param -> new TextFieldTreeCellImpl());
 		groupsView.setEditable(true);
@@ -86,7 +86,7 @@ public class Controller {
 						fieldCP.setText(c.getAdresse().getCodePostal());
 						choicePays.setValue(c.getAdresse().getPays());
 						fieldDate.setValue(c.getDateNaissance());
-						if (c.getSexe() == "M")
+						if (c.getSexe().equals("M"))
 							radioGroupSexe.selectToggle(radioM);
 						else
 							radioGroupSexe.selectToggle(radioF);
@@ -99,7 +99,7 @@ public class Controller {
 		ListChangeListener<NF28Contact> contactChange = change -> {
 			change.next();
 			if (change.wasRemoved()) {
-				// remove corresponding TreeItems
+				// TODO remove corresponding TreeItems
 			}
 			else if (change.wasAdded()) { // add corresponding Contact TreeItems
 				change.getAddedSubList().forEach(item -> {
@@ -113,7 +113,7 @@ public class Controller {
 		ListChangeListener<NF28Groupe> groupChange = change -> {
 			change.next();
 			if (change.wasRemoved()) {
-				// remove corresponding TreeItems
+				// TODO remove corresponding TreeItems
 			}
 			else if (change.wasAdded()) { // add corresponding Groups TreeItems
 				change.getAddedSubList().forEach(item -> {
