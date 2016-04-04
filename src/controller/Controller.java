@@ -14,7 +14,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import model.NF28Country;
-import sun.reflect.generics.tree.Tree;
 
 
 public class Controller {
@@ -38,6 +37,8 @@ public class Controller {
 	@FXML
 	DatePicker fieldDate;
 	@FXML
+	Button btnFormValidation;
+	@FXML
 	TreeView<Object> groupsView;
 	@FXML
 	VBox editingPanel;
@@ -45,6 +46,10 @@ public class Controller {
     Model model;
 	TreeItem<Object> currentGroupeItem;
     NF28Contact currentContact;
+	enum EditingState {
+		IDLE, EDITING, ADDING
+	}
+	EditingState state = EditingState.IDLE;
 
     public Controller(){
     	model = new Model();
@@ -62,15 +67,32 @@ public class Controller {
 		groupsView.setRoot(root);
 		groupsView.setCellFactory(param -> new TextFieldTreeCellImpl());
 		groupsView.setEditable(true);
-		
-		editingPanel.setVisible(false);
+
+		setIdleState();
 
 		groupsView.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					if (newValue.getValue() instanceof NF28Groupe)
+					System.out.println(newValue.getValue().getClass());
+
+					if (newValue.getValue() instanceof NF28Groupe) {
 						currentGroupeItem = newValue;
-					else if (newValue.getValue() instanceof NF28Contact)
+					} else if (newValue.getValue() instanceof NF28Contact) {
 						currentGroupeItem = newValue.getParent();
+						setEditingState();
+						// fill editing panel with selected contact's properties
+						NF28Contact c = (NF28Contact) newValue.getValue();
+						fieldNom.setText(c.getNom());
+						fieldPrenom.setText(c.getPrenom());
+						fieldVoie.setText(c.getAdresse().getVoie());
+						fieldVille.setText(c.getAdresse().getVille());
+						fieldCP.setText(c.getAdresse().getCodePostal());
+						choicePays.setValue(c.getAdresse().getPays());
+						fieldDate.setValue(c.getDateNaissance());
+						if (c.getSexe() == "M")
+							radioGroupSexe.selectToggle(radioM);
+						else
+							radioGroupSexe.selectToggle(radioF);
+					}
 				}
 		);
 
@@ -232,13 +254,29 @@ public class Controller {
 			NF28Groupe newGroupe = new NF28Groupe();
 			model.getGroups().add(newGroupe);
 		} else { // l'item sélectionné est un contact ou un groupe
-
 			currentContact = new NF28Contact();
-			editingPanel.setVisible(true);
+			setAddingState();
 			this.reset();
 		}
 	}
-	
+
+	private void setAddingState() {
+		editingPanel.setVisible(true);
+		btnFormValidation.setText("Add contact");
+		state = EditingState.ADDING;
+	}
+
+	private void setEditingState() {
+		editingPanel.setVisible(true);
+		btnFormValidation.setText("Save modifications");
+		state = EditingState.EDITING;
+	}
+
+	private void setIdleState() {
+		editingPanel.setVisible(false);
+		state = EditingState.IDLE;
+	}
+
 	private void reset() {
 		fieldNom.setText("");
 		fieldPrenom.setText("");
@@ -258,22 +296,28 @@ public class Controller {
 		if (groupsView.getSelectionModel().selectedItemProperty().getValue() == null)
 			return;
 
-		// on ajoute le contact au groupe selectionné, s'il y en a un.
-		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue() instanceof NF28Groupe){
-			// valider le contact
-			if (model.validateContact(currentContact)) {
-				// ajouter le contact au groupe sélectionné
-				((NF28Groupe) currentGroupeItem.getValue()).getContacts().add(new NF28Contact(currentContact));
-				// cacher le panel d'édition
-				editingPanel.setVisible(false);
+		if (state == EditingState.ADDING) {
+			// on ajoute le contact au groupe selectionné, s'il y en a un.
+			if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue() instanceof NF28Groupe){
+				// valider le contact
+				if (model.validateContact(currentContact)) {
+					// ajouter le contact au groupe sélectionné
+					((NF28Groupe) currentGroupeItem.getValue()).getContacts().add(new NF28Contact(currentContact));
+					setIdleState();
+				}
+			} else {
+				// avertir l'utilisateur qu'il faut sélectionner un groupe :
+				Alert alert = new Alert(Alert.AlertType.ERROR, "Veuillez sélectionner le groupe dans lequel vous souhaitez enregistrer ce contact.");
+				alert.showAndWait();
 			}
-		} else {
-			// avertir l'utilisateur qu'il faut sélectionner un groupe :
-			Alert alert = new Alert(Alert.AlertType.ERROR, "Veuillez sélectionner le groupe dans lequel vous souhaitez enregistrer ce contact.");
-			alert.showAndWait();
 		}
+		else if (state == EditingState.EDITING) {
+
+		}
+
+
 	}
-	
+
 	private final class TextFieldTreeCellImpl extends TreeCell<Object> {
 		 
         private TextField textField;
@@ -286,7 +330,7 @@ public class Controller {
             super.startEdit();
             
             // on ne peut modifier que les items de groupe
-            if(!(currentGroupeItem.getValue() instanceof NF28Groupe)){
+            if(getTreeItem() == null || !(getTreeItem().getValue() instanceof NF28Groupe)){
             	return;
             }
             if (textField == null) {
@@ -300,13 +344,17 @@ public class Controller {
         @Override
         public void cancelEdit() {
             super.cancelEdit();
-            setText((String) getItem());
+            setText(getItem().toString());
             setGraphic(getTreeItem().getGraphic());
         }
  
         @Override
         public void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
+
+			if (empty && isSelected()) {
+				updateSelected(false);
+			}
  
             if (empty) {
                 setText(null);
@@ -332,8 +380,8 @@ public class Controller {
                 @Override
                 public void handle(KeyEvent t) {
                     if (t.getCode() == KeyCode.ENTER) {
-                        commitEdit(textField.getText());
-                        ((NF28Groupe)currentGroupeItem.getValue()).setNom(textField.getText());
+						((NF28Groupe) getTreeItem().getValue()).setNom(textField.getText());
+						commitEdit(getTreeItem().getValue());
                     } else if (t.getCode() == KeyCode.ESCAPE) {
                         cancelEdit();
                     }
