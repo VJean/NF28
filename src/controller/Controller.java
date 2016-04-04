@@ -101,7 +101,7 @@ public class Controller {
 			else if (change.wasAdded()) { // add corresponding Contact TreeItems
 				change.getAddedSubList().forEach(item -> {
 					// considérer le groupe selectionné actuellement, ou bien le père du contact selectionné actuellement
-					TreeItem<Object> c = new TreeItem<Object>(item);
+					TreeItem<Object> c = new TreeItem<Object>(item, new ImageView("file:res/contact.png"));
 					this.currentGroupeItem.getChildren().add(c);
 				});
 			}
