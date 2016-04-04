@@ -3,12 +3,15 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
+import javafx.event.EventHandler;
 import model.Model;
 import model.NF28Contact;
 import model.NF28Groupe;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import model.NF28Country;
 import sun.reflect.generics.tree.Tree;
@@ -57,6 +60,9 @@ public class Controller {
 
 		TreeItem<Object> root = new TreeItem<Object>("Fiche de contacts");
 		groupsView.setRoot(root);
+		groupsView.setCellFactory(param -> new TextFieldTreeCellImpl());
+		groupsView.setEditable(true);
+		
 		editingPanel.setVisible(false);
 
 		groupsView.getSelectionModel().selectedItemProperty().addListener(
@@ -267,4 +273,76 @@ public class Controller {
 			alert.showAndWait();
 		}
 	}
+	
+	private final class TextFieldTreeCellImpl extends TreeCell<Object> {
+		 
+        private TextField textField;
+ 
+        public TextFieldTreeCellImpl() {
+        }
+ 
+        @Override
+        public void startEdit() {
+            super.startEdit();
+            
+            // on ne peut modifier que les items de groupe
+            if(!(currentGroupeItem.getValue() instanceof NF28Groupe)){
+            	return;
+            }
+            if (textField == null) {
+                createTextField();
+            }
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+        }
+ 
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText((String) getItem());
+            setGraphic(getTreeItem().getGraphic());
+        }
+ 
+        @Override
+        public void updateItem(Object item, boolean empty) {
+            super.updateItem(item, empty);
+ 
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    setText(getString());
+                    setGraphic(getTreeItem().getGraphic());
+                }
+            }
+        }
+ 
+        private void createTextField() {
+            textField = new TextField(getString());
+            textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+ 
+                @Override
+                public void handle(KeyEvent t) {
+                    if (t.getCode() == KeyCode.ENTER) {
+                        commitEdit(textField.getText());
+                        ((NF28Groupe)currentGroupeItem.getValue()).setNom(textField.getText());
+                    } else if (t.getCode() == KeyCode.ESCAPE) {
+                        cancelEdit();
+                    }
+                }
+            });
+        }
+ 
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    }
 }
