@@ -57,7 +57,7 @@ public class Controller {
 
 		TreeItem<Object> root = new TreeItem<Object>("Fiche de contacts");
 		groupsView.setRoot(root);
-		editingPanel.visibleProperty().set(false);
+		editingPanel.setVisible(false);
 
 		groupsView.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> {
@@ -224,7 +224,7 @@ public class Controller {
 		} else { // l'item sélectionné est un contact ou un groupe
 
 			currentContact = new NF28Contact();
-			editingPanel.visibleProperty().set(true);
+			editingPanel.setVisible(true);
 			this.reset();
 		}
 	}
@@ -252,7 +252,10 @@ public class Controller {
 		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue().getClass() == NF28Groupe.class){
 			// valider le contact
 			if (model.validateContact(currentContact)) {
+				// ajouter le contact au groupe sélectionné
 				((NF28Groupe) currentGroupeItem.getValue()).getContacts().add(new NF28Contact(currentContact));
+				// cacher le panel d'édition
+				editingPanel.setVisible(false);
 			}
 		} else {
 			// avertir l'utilisateur qu'il faut sélectionner un groupe :
