@@ -72,8 +72,6 @@ public class Controller {
 
 		groupsView.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> {
-					System.out.println(newValue.getValue().getClass());
-
 					if (newValue.getValue() instanceof NF28Groupe) {
 						currentGroupeItem = newValue;
 					} else if (newValue.getValue() instanceof NF28Contact) {
