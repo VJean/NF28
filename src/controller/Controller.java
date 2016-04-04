@@ -1,19 +1,16 @@
 package controller;
 
-import java.time.LocalDate;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
 import model.Model;
 import model.NF28Contact;
 import model.NF28Groupe;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import model.NF28Country;
+import sun.reflect.generics.tree.Tree;
 
 
 public class Controller {
@@ -42,6 +39,7 @@ public class Controller {
 	VBox editingPanel;
 
     Model model;
+	TreeItem<Object> currentGroupeItem;
     NF28Contact currentContact;
 
     public Controller(){
@@ -90,10 +88,13 @@ public class Controller {
 			change.next();
 			if (change.wasRemoved()) {
 				// remove corresponding TreeItems
+				// remove corresponding TreeItems
 			}
 			else if (change.wasAdded()) { // add corresponding Contact TreeItems
 				change.getAddedSubList().forEach(item -> {
 					// considérer le groupe selectionné actuellement, ou bien le père du contact selectionné actuellement
+					TreeItem<Object> c = new TreeItem<Object>(item);
+					this.currentGroupeItem.getChildren().add(c);
 				});
 			}
 		};
@@ -204,14 +205,20 @@ public class Controller {
 	}
 
 	public void addTreeItem() {
-		if (groupsView.getSelectionModel().selectedItemProperty().getValue() == null)
+		TreeItem<Object> treeItem = groupsView.getSelectionModel().selectedItemProperty().getValue();
+		if (treeItem == null)
 			return;
 		
-		// l'item selecionné est la racine
-		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue().getClass() == String.class){
+		// l'item sélectionné est la racine
+		if (treeItem.getValue().getClass() == String.class){
 			NF28Groupe newGroupe = new NF28Groupe();
 			model.getGroups().add(newGroupe);
-		} else { // l'item selectionné est un contact ou un groupe
+		} else { // l'item sélectionné est un contact ou un groupe
+			if (treeItem.getValue().getClass() == NF28Groupe.class)
+				currentGroupeItem = treeItem;
+			else
+				currentGroupeItem = treeItem.getParent();
+
 			currentContact = new NF28Contact();
 			editingPanel.visibleProperty().set(true);
 			this.reset();
@@ -239,12 +246,9 @@ public class Controller {
 
 		// on ajoute le contact au groupe selectionné, s'il y en a un.
 		if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue().getClass() == NF28Groupe.class){
-			// référencer le groupe sélectionné
-			NF28Groupe currentGroupe = (NF28Groupe) groupsView.getSelectionModel().selectedItemProperty().getValue().getValue();
-
 			// valider le contact
 			if (model.validateContact(currentContact)) {
-				currentGroupe.getContacts().add(new NF28Contact(currentContact));
+				((NF28Groupe) currentGroupeItem.getValue()).getContacts().add(new NF28Contact(currentContact));
 			}
 		} else {
 			// avertir l'utilisateur qu'il faut sélectionner un groupe :
