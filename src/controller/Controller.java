@@ -59,6 +59,14 @@ public class Controller {
 		groupsView.setRoot(root);
 		editingPanel.visibleProperty().set(false);
 
+		groupsView.getSelectionModel().selectedItemProperty().addListener(
+				(observable, oldValue, newValue) -> {
+					if (newValue.getValue().getClass() == NF28Groupe.class)
+						currentGroupeItem = newValue;
+					else if (newValue.getValue().getClass() == NF28Contact.class)
+						currentGroupeItem = newValue.getParent();
+				}
+		);
 
 		fieldNom.textProperty().addListener(
 				(obs,oldval,newval) -> this.currentContact.setNom(newval)
@@ -88,7 +96,6 @@ public class Controller {
 		ListChangeListener<NF28Contact> contactChange = change -> {
 			change.next();
 			if (change.wasRemoved()) {
-				// remove corresponding TreeItems
 				// remove corresponding TreeItems
 			}
 			else if (change.wasAdded()) { // add corresponding Contact TreeItems
@@ -215,10 +222,6 @@ public class Controller {
 			NF28Groupe newGroupe = new NF28Groupe();
 			model.getGroups().add(newGroupe);
 		} else { // l'item sélectionné est un contact ou un groupe
-			if (treeItem.getValue().getClass() == NF28Groupe.class)
-				currentGroupeItem = treeItem;
-			else
-				currentGroupeItem = treeItem.getParent();
 
 			currentContact = new NF28Contact();
 			editingPanel.visibleProperty().set(true);
