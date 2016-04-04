@@ -68,31 +68,8 @@ public class Controller {
 				}
 		);
 
-		fieldNom.textProperty().addListener(
-				(obs,oldval,newval) -> this.currentContact.setNom(newval)
-		);
-		fieldPrenom.textProperty().addListener(
-				(obs,oldval,newval) -> this.currentContact.setPrenom(newval)
-		);
-		fieldVoie.textProperty().addListener(
-				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setVoie(newValue)
-		);
-		fieldVille.textProperty().addListener(
-				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setVille(newValue)
-		);
-		fieldCP.textProperty().addListener(
-				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setCodePostal(newValue)
-		);
-		choicePays.getSelectionModel().selectedItemProperty().addListener(
-				(obs,oldval,newval) -> this.currentContact.getAdresse().setPays(newval)
-		);
-		radioGroupSexe.selectedToggleProperty().addListener(
-				(obs,oldval,newval) -> this.currentContact.setSexe(newval.toString())
-		);
-		fieldDate.valueProperty().addListener(
-				(observable, oldValue, newValue) -> this.currentContact.setDateNaissance(newValue)
-		);
-				
+		listenToEditingPanel();
+
 		ListChangeListener<NF28Contact> contactChange = change -> {
 			change.next();
 			if (change.wasRemoved()) {
@@ -126,6 +103,33 @@ public class Controller {
 		// bind to model validation map
 		listenToValidationErrors();
 
+	}
+
+	private void listenToEditingPanel() {
+		fieldNom.textProperty().addListener(
+				(obs,oldval,newval) -> this.currentContact.setNom(newval)
+		);
+		fieldPrenom.textProperty().addListener(
+				(obs,oldval,newval) -> this.currentContact.setPrenom(newval)
+		);
+		fieldVoie.textProperty().addListener(
+				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setVoie(newValue)
+		);
+		fieldVille.textProperty().addListener(
+				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setVille(newValue)
+		);
+		fieldCP.textProperty().addListener(
+				(observable, oldValue, newValue) -> this.currentContact.getAdresse().setCodePostal(newValue)
+		);
+		choicePays.getSelectionModel().selectedItemProperty().addListener(
+				(obs,oldval,newval) -> this.currentContact.getAdresse().setPays(newval)
+		);
+		radioGroupSexe.selectedToggleProperty().addListener(
+				(obs,oldval,newval) -> this.currentContact.setSexe(newval.toString())
+		);
+		fieldDate.valueProperty().addListener(
+				(observable, oldValue, newValue) -> this.currentContact.setDateNaissance(newValue)
+		);
 	}
 
 	private void listenToValidationErrors() {
