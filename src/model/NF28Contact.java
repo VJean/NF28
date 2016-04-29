@@ -1,5 +1,9 @@
 package model;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -10,7 +14,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class NF28Contact {
+public class NF28Contact implements Externalizable {
 	// ref to parent NF28Groupe ?
 		
 	private StringProperty nom = new SimpleStringProperty();
@@ -78,5 +82,15 @@ public class NF28Contact {
 	@Override
 	public String toString() {
 		return getNom() + ", " + getPrenom();
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+
 	}
 }

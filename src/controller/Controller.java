@@ -5,6 +5,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import model.Model;
 import model.NF28Contact;
 import model.NF28Groupe;
@@ -16,11 +18,14 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import model.NF28Country;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 
 public class Controller implements Initializable {
+	@FXML
+	VBox rootContainer;
 	@FXML
 	TextField fieldNom;
 	@FXML
@@ -50,11 +55,16 @@ public class Controller implements Initializable {
     private Model model;
 	private TreeItem<Object> currentGroupeItem;
     private NF28Contact currentContact;
+	private File currentFile;
 
 	private enum EditingState {
 		IDLE, EDITING, ADDING
 	}
 	private EditingState state = EditingState.IDLE;
+
+	private Stage getStage() {
+		return (Stage) rootContainer.getScene().getWindow();
+	}
 
     public Controller(){
     	model = new Model();
@@ -318,8 +328,30 @@ public class Controller implements Initializable {
 		else if (state == EditingState.EDITING) {
 
 		}
+	}
 
+	public void openFile() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open database");
+		//fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+		File f = fileChooser.showOpenDialog(getStage());
 
+		if (f != null) {
+			model.openFile(f);
+			currentFile = f;
+		}
+	}
+
+	public void saveFileAs() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Save database");
+		//fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+		File f = fileChooser.showSaveDialog(getStage());
+
+		if (f != null) {
+			model.saveFile(f);
+			currentFile = f;
+		}
 	}
 
 	private final class TextFieldTreeCellImpl extends TreeCell<Object> {

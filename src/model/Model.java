@@ -1,14 +1,13 @@
 package model;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.regex.Pattern;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+
+import java.io.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class Model {
 	private ObservableList<NF28Groupe> groups = FXCollections.observableArrayList();
@@ -90,5 +89,22 @@ public class Model {
 		}
 
 		return valid;
+	}
+
+	public void openFile(File f) {
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveFile(File f) {
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+			oos.write(this.groups);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
