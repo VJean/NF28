@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.event.EventHandler;
+import javafx.fxml.Initializable;
 import model.Model;
 import model.NF28Contact;
 import model.NF28Groupe;
@@ -15,8 +16,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import model.NF28Country;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class Controller {
+
+public class Controller implements Initializable {
 	@FXML
 	TextField fieldNom;
 	@FXML
@@ -46,6 +50,7 @@ public class Controller {
     private Model model;
 	private TreeItem<Object> currentGroupeItem;
     private NF28Contact currentContact;
+
 	private enum EditingState {
 		IDLE, EDITING, ADDING
 	}
@@ -54,8 +59,9 @@ public class Controller {
     public Controller(){
     	model = new Model();
     }
-    
-	public void initialize(){
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
 		System.out.println("initializing controller");
 		choicePays.setItems(FXCollections.observableArrayList(NF28Country.getCountries()));
 
