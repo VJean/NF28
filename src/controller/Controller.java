@@ -20,6 +20,7 @@ import model.NF28Country;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 
@@ -77,7 +78,9 @@ public class Controller implements Initializable {
 
 		radioGroupSexe = new ToggleGroup();
 		radioM.setToggleGroup(radioGroupSexe);
+		radioM.setUserData("M");
 		radioF.setToggleGroup(radioGroupSexe);
+		radioF.setUserData("F");
 
 		TreeItem<Object> root = new TreeItem<>("Fiche de contacts");
 		groupsView.setRoot(root);
@@ -115,9 +118,17 @@ public class Controller implements Initializable {
 		ListChangeListener<NF28Contact> contactChange = change -> {
 			change.next();
 			if (change.wasRemoved()) {
-				// TODO remove corresponding TreeItems
-			}
-			else if (change.wasAdded()) { // add corresponding Contact TreeItems
+				change.getRemoved().forEach(item -> {
+
+					Iterator<TreeItem<Object>> gIt = groupsView.getRoot().getChildren().iterator();
+					boolean removed = false;
+					while (gIt.hasNext() && !removed) {
+						TreeItem<Object> next = gIt.next();
+						removed = next.getChildren().removeIf(objectTreeItem -> objectTreeItem.getValue() == item);
+					}
+
+				});
+			} else if (change.wasAdded()) { // add corresponding Contact TreeItems
 				change.getAddedSubList().forEach(item -> {
 					// considérer le groupe selectionné actuellement, ou bien le père du contact selectionné actuellement
 					TreeItem<Object> c = new TreeItem<Object>(item, new ImageView("file:res/contact.png"));
@@ -129,7 +140,7 @@ public class Controller implements Initializable {
 		ListChangeListener<NF28Groupe> groupChange = change -> {
 			change.next();
 			if (change.wasRemoved()) {
-				// TODO remove corresponding TreeItems
+				change.getRemoved().forEach(item -> this.groupsView.getRoot().getChildren().removeIf(objectTreeItem ->  objectTreeItem.getValue() == item));
 			}
 			else if (change.wasAdded()) { // add corresponding Groups TreeItems
 				change.getAddedSubList().forEach(item -> {
@@ -175,7 +186,7 @@ public class Controller implements Initializable {
 				(obs,oldval,newval) -> this.currentContact.getAdresse().setPays(newval)
 		);
 		radioGroupSexe.selectedToggleProperty().addListener(
-				(obs,oldval,newval) -> this.currentContact.setSexe(newval.toString())
+				(obs,oldval,newval) -> this.currentContact.setSexe(newval.getUserData().toString())
 		);
 		fieldDate.valueProperty().addListener(
 				(observable, oldValue, newValue) -> this.currentContact.setDateNaissance(newValue)
@@ -311,7 +322,18 @@ public class Controller implements Initializable {
 	}
 
 	public void removeTreeItem() {
-		
+		TreeItem<Object> treeItem = groupsView.getSelectionModel().selectedItemProperty().getValue();
+		if (treeItem == null)
+			return;
+
+		// l'item sélectionné est la racine
+		if (treeItem.getValue() instanceof String){
+			// do nothing
+		} else if (treeItem.getValue() instanceof NF28Groupe) {
+			model.getGroups().remove(treeItem.getValue());
+		} else if (treeItem.getValue() instanceof NF28Contact) {
+			model.getGroups().get(model.getGroups().indexOf(treeItem.getParent().getValue())).getContacts().remove(treeItem.getValue());
+		}
 	}
 	
 	public void saveContact(){
@@ -345,6 +367,7 @@ public class Controller implements Initializable {
 		File f = fileChooser.showOpenDialog(getStage());
 
 		if (f != null) {
+			//groupsView.getRoot().getChildren().clear();
 			model.openFile(f);
 			currentFile = f;
 		}

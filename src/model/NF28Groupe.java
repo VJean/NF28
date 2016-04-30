@@ -57,6 +57,6 @@ public class NF28Groupe implements Externalizable {
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		setNom(in.readUTF());
-		getContacts().setAll((NF28Contact[]) in.readObject());
+		getContacts().addAll((NF28Contact[]) in.readObject());
 	}
 }

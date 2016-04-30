@@ -97,7 +97,8 @@ public class Model {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 
 			try {
-				groups.setAll((NF28Groupe[]) ois.readObject());
+				groups.clear();
+				groups.addAll((NF28Groupe[]) ois.readObject());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
