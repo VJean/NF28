@@ -55,7 +55,8 @@ public class Controller implements Initializable {
 
     private Model model;
 	private TreeItem<Object> currentGroupeItem;
-    private NF28Contact currentContact;
+	private TreeItem<Object> originalContactItem;
+    private NF28Contact currentContact = new NF28Contact();
 	private File currentFile;
 
 	private enum EditingState {
@@ -96,6 +97,7 @@ public class Controller implements Initializable {
 					} else if (newValue.getValue() instanceof NF28Contact) {
 						currentGroupeItem = newValue.getParent();
 						setEditingState();
+						originalContactItem = newValue;
 						// fill editing panel with selected contact's properties
 						NF28Contact c = (NF28Contact) newValue.getValue();
 						fieldNom.setText(c.getNom());
@@ -340,30 +342,28 @@ public class Controller implements Initializable {
 		if (groupsView.getSelectionModel().selectedItemProperty().getValue() == null)
 			return;
 
-		if (state == EditingState.ADDING) {
+		if (model.validateContact(currentContact)) {
+			if (state == EditingState.EDITING) {
+				// remove original contact, and add the modified one
+				model.getGroups().get(model.getGroups().indexOf(originalContactItem.getParent().getValue())).getContacts().remove(originalContactItem.getValue());
+			}
+
 			// on ajoute le contact au groupe selectionné, s'il y en a un.
-			if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue() instanceof NF28Groupe){
-				// valider le contact
-				if (model.validateContact(currentContact)) {
-					// ajouter le contact au groupe sélectionné
-					((NF28Groupe) currentGroupeItem.getValue()).getContacts().add(new NF28Contact(currentContact));
-					setIdleState();
-				}
+			if (groupsView.getSelectionModel().selectedItemProperty().getValue().getValue() instanceof NF28Groupe) {
+				// ajouter le contact au groupe sélectionné
+				((NF28Groupe) currentGroupeItem.getValue()).getContacts().add(new NF28Contact(currentContact));
+				setIdleState();
 			} else {
 				// avertir l'utilisateur qu'il faut sélectionner un groupe :
 				Alert alert = new Alert(Alert.AlertType.ERROR, "Veuillez sélectionner le groupe dans lequel vous souhaitez enregistrer ce contact.");
 				alert.showAndWait();
 			}
 		}
-		else if (state == EditingState.EDITING) {
-
-		}
 	}
 
 	public void openFile() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open database");
-		//fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
 		File f = fileChooser.showOpenDialog(getStage());
 
 		if (f != null) {
@@ -376,7 +376,6 @@ public class Controller implements Initializable {
 	public void saveFileAs() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Save database");
-		//fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
 		File f = fileChooser.showSaveDialog(getStage());
 
 		if (f != null) {
