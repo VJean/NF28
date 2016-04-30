@@ -95,6 +95,10 @@ public class NF28Contact implements Externalizable {
 
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-
+		setNom(in.readUTF());
+		setPrenom(in.readUTF());
+		setSexe(in.readUTF());
+		setAdresse((NF28Adresse) in.readObject());
+		setDateNaissance(LocalDate.parse(in.readUTF()));
 	}
 }

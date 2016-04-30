@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -49,13 +51,12 @@ public class NF28Groupe implements Externalizable {
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeUTF(getNom());
-		for (NF28Contact contact : contacts) {
-			out.writeObject(contact);
-		}
+		out.writeObject(contacts.toArray(new NF28Contact[contacts.size()]));
 	}
 
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-
+		setNom(in.readUTF());
+		getContacts().setAll((NF28Contact[]) in.readObject());
 	}
 }

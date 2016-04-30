@@ -85,6 +85,9 @@ public class NF28Adresse implements Externalizable {
 
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-
+		setVoie(in.readUTF());
+		setCodePostal(in.readUTF());
+		setVille(in.readUTF());
+		setPays(in.readUTF());
 	}
 }

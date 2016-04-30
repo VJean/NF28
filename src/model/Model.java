@@ -7,19 +7,20 @@ import javafx.collections.ObservableMap;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Model {
-	private ObservableList<NF28Groupe> groups = FXCollections.observableArrayList();
-	private ObservableMap<String, String> validationErrors = FXCollections.observableHashMap();
+	private final ObservableList<NF28Groupe> groups = FXCollections.observableArrayList();
+	private final ObservableMap<String, String> validationErrors = FXCollections.observableHashMap();
 
 	public ObservableList<NF28Groupe> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(ObservableList<NF28Groupe> groups) {
-		this.groups = groups;
-	}
+//	public void setGroups(ObservableList<NF28Groupe> groups) {
+//		this.groups = groups;
+//	}
 
 	public static ArrayList<NF28Groupe> getAvailableGroups() {
 		return null;
@@ -94,6 +95,13 @@ public class Model {
 	public void openFile(File f) {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+
+			try {
+				groups.setAll((NF28Groupe[]) ois.readObject());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -102,9 +110,8 @@ public class Model {
 	public void saveFile(File f) {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
-			for (NF28Groupe g: this.groups) {
-				g.writeExternal(oos);
-			}
+			oos.writeObject(groups.toArray(new NF28Groupe[groups.size()]));
+			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

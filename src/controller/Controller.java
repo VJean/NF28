@@ -135,6 +135,14 @@ public class Controller implements Initializable {
 				change.getAddedSubList().forEach(item -> {
 					TreeItem<Object> g = new TreeItem<Object>(item, new ImageView("file:res/group.png"));
 					this.groupsView.getRoot().getChildren().add(g);
+
+					if (!item.getContacts().isEmpty()) {
+						for (NF28Contact contact : item.getContacts()) {
+							TreeItem<Object> c = new TreeItem<Object>(contact, new ImageView("file:res/contact.png"));
+							g.getChildren().add(c);
+						}
+					}
+
 					item.getContacts().addListener(contactChange);
 				});
 			}
