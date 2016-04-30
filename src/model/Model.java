@@ -102,7 +102,9 @@ public class Model {
 	public void saveFile(File f) {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
-			oos.write(this.groups);
+			for (NF28Groupe g: this.groups) {
+				g.writeExternal(oos);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

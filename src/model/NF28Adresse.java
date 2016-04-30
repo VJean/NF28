@@ -3,10 +3,15 @@ package model;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 /**
  * Created by JeanV on 21/03/2016.
  */
-public class NF28Adresse {
+public class NF28Adresse implements Externalizable {
     
 	private StringProperty voie = new SimpleStringProperty();
 	private StringProperty codePostal = new SimpleStringProperty();
@@ -68,5 +73,18 @@ public class NF28Adresse {
 		this.codePostal.setValue(adresse.getCodePostal());
 		this.pays.setValue(adresse.getPays());
 		this.ville.setValue(adresse.getVille());
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeUTF(getVoie());
+		out.writeUTF(getCodePostal());
+		out.writeUTF(getVille());
+		out.writeUTF(getPays());
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+
 	}
 }

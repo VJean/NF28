@@ -86,7 +86,11 @@ public class NF28Contact implements Externalizable {
 
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
-
+		out.writeUTF(getNom());
+		out.writeUTF(getPrenom());
+		out.writeUTF(getSexe());
+		out.writeObject(getAdresse());
+		out.writeUTF(getDateNaissance().toString());
 	}
 
 	@Override

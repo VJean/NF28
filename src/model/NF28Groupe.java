@@ -48,7 +48,10 @@ public class NF28Groupe implements Externalizable {
 
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
-
+		out.writeUTF(getNom());
+		for (NF28Contact contact : contacts) {
+			out.writeObject(contact);
+		}
 	}
 
 	@Override
